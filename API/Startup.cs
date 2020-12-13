@@ -21,6 +21,7 @@ namespace API
     }
 
     public IConfiguration Configuration { get; }
+    private readonly string ApiCors = "_apiCors";
 
     // This method gets called by the runtime. Use this method to add services to the container.
     public void ConfigureServices(IServiceCollection services)
@@ -32,6 +33,19 @@ namespace API
           {
             options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
           });
+
+      // api cors for allowing methods that coming from different localhosts
+      services.AddCors(options =>
+      {
+        options.AddPolicy(name: ApiCors,
+                  builder =>
+                  {
+                    builder.WithOrigins("http://localhost:3000")
+                                              .AllowAnyHeader()
+                                              .AllowAnyMethod()
+                                              .AllowCredentials();
+                  });
+      });
 
       // api versioning
       services.AddApiVersioning(v =>
@@ -106,6 +120,7 @@ namespace API
       // app.UseHttpsRedirection();
       app.UseRouting();
       app.UseAuthorization();
+      app.UseCors(ApiCors);
       app.UseEndpoints(endpoints =>
       {
         endpoints.MapControllers();
