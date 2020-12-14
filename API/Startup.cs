@@ -10,6 +10,9 @@ using Persistence;
 using System.Text.Json.Serialization;
 using AutoMapper;
 using Microsoft.OpenApi.Models;
+using Application.Activities;
+using MediatR;
+using Application.Core;
 
 namespace API
 {
@@ -61,7 +64,10 @@ namespace API
       });
 
       // AutoMapper
-      services.AddAutoMapper(typeof(Startup));
+      services.AddAutoMapper(typeof(MappingProfiles).Assembly);
+
+      // MediatR
+      services.AddMediatR(typeof(List.Handler).Assembly);
 
       // swagger documentation for api
       services.AddSwaggerGen(options =>
