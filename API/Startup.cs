@@ -12,7 +12,6 @@ using AutoMapper;
 using Microsoft.OpenApi.Models;
 using Application.Activities;
 using MediatR;
-using Application.Core;
 
 namespace API
 {
@@ -64,7 +63,7 @@ namespace API
       });
 
       // AutoMapper
-      services.AddAutoMapper(typeof(MappingProfiles).Assembly);
+      services.AddAutoMapper(typeof(Startup).Assembly);
 
       // MediatR
       services.AddMediatR(typeof(List.Handler).Assembly);

@@ -36,24 +36,24 @@ namespace API.Controllers.v1
 
     [Route("create")]
     [HttpPost]
-    public async Task<ActionResult<Unit>> Create(Activity activity)
+    public async Task<ActionResult<Unit>> Create(Create.Command command)
     {
-      return Ok(await _mediator.Send(new Create.Command { Activity = activity }));
+      return await _mediator.Send(command);
     }
 
     [Route("edit/{id}")]
     [HttpPut]
-    public async Task<ActionResult<Unit>> Edit(Guid id, Activity activity)
+    public async Task<ActionResult<Unit>> Edit(Guid id, Edit.CommandEdit command)
     {
-      activity.Id = id;
-      return Ok(await _mediator.Send(new Edit.Command { Activity = activity }));
+      command.Id = id;
+      return await _mediator.Send(command);
     }
 
     [Route("delete/{id}")]
     [HttpDelete]
-    public async Task<IActionResult> DeleteActivity(Guid id)
+    public async Task<ActionResult<Unit>> DeleteActivity(Guid id)
     {
-      return Ok(await _mediator.Send(new Delete.Command { Id = id }));
+      return await _mediator.Send(new Delete.Command { Id = id });
     }
     #endregion
   }
