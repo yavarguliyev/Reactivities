@@ -1,9 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Domain.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace Persistence
 {
-  public class DataDbContext : DbContext
+  public class DataDbContext : IdentityDbContext<AppUser>
   {
     public DataDbContext(DbContextOptions options) : base(options) { }
 
@@ -11,6 +12,7 @@ namespace Persistence
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
+      base.OnModelCreating(builder);
     }
   }
 }

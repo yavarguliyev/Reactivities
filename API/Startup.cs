@@ -8,12 +8,13 @@ using Microsoft.Extensions.Hosting;
 using System;
 using Persistence;
 using System.Text.Json.Serialization;
-using AutoMapper;
 using Microsoft.OpenApi.Models;
 using Application.Activities;
 using MediatR;
 using FluentValidation.AspNetCore;
 using API.Middleware;
+using Domain.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace API
 {
@@ -30,6 +31,7 @@ namespace API
     // This method gets called by the runtime. Use this method to add services to the container.
     public void ConfigureServices(IServiceCollection services)
     {
+
       #region 
       // controllers without view
       services.AddControllers()
@@ -64,9 +66,6 @@ namespace API
         // default version 1.0
         v.DefaultApiVersion = new ApiVersion(1, 0);
       });
-
-      // AutoMapper
-      services.AddAutoMapper(typeof(Startup).Assembly);
 
       // MediatR
       services.AddMediatR(typeof(List.Handler).Assembly);
@@ -110,6 +109,11 @@ namespace API
       {
         opt.UseSqlite(Configuration.GetConnectionString("DefaultConnection"), m => m.MigrationsAssembly("Persistence"));
       });
+
+      var builder = services.AddIdentityCore<AppUser>();
+      var identityBuilder = new IdentityBuilder(builder.UserType, builder.Services);
+      identityBuilder.AddEntityFrameworkStores<DataDbContext>();
+      identityBuilder.AddSignInManager<SignInManager<AppUser>>();
       #endregion
     }
 
@@ -124,17 +128,19 @@ namespace API
       }
       else
       {
-        //   app.UseHsts();
+        // app.UseHsts();
       }
 
       // app.UseHttpsRedirection();
       app.UseRouting();
       app.UseAuthorization();
       app.UseCors(ApiCors);
+
       app.UseEndpoints(endpoints =>
       {
         endpoints.MapControllers();
       });
+
       app.UseSwagger();
       app.UseSwaggerUI(s =>
       {
