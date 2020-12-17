@@ -34,7 +34,7 @@ namespace API
 
       #region 
       // controllers without view
-      services.AddControllers()
+      services.AddMvc()
           .AddFluentValidation(cfg => cfg.RegisterValidatorsFromAssemblyContaining<Create>())
           .AddJsonOptions(options =>
           {
@@ -110,7 +110,7 @@ namespace API
         opt.UseSqlite(Configuration.GetConnectionString("DefaultConnection"), m => m.MigrationsAssembly("Persistence"));
       });
 
-      var builder = services.AddIdentityCore<AppUser>();
+      var builder = services.AddDefaultIdentity<AppUser>();
       var identityBuilder = new IdentityBuilder(builder.UserType, builder.Services);
       identityBuilder.AddEntityFrameworkStores<DataDbContext>();
       identityBuilder.AddSignInManager<SignInManager<AppUser>>();
@@ -133,7 +133,7 @@ namespace API
 
       // app.UseHttpsRedirection();
       app.UseRouting();
-      app.UseAuthorization();
+      app.UseAuthentication();
       app.UseCors(ApiCors);
 
       app.UseEndpoints(endpoints =>

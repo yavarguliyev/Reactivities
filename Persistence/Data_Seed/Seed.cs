@@ -37,7 +37,7 @@ namespace Persistence.Data_Seed
 
         foreach (var user in users)
         {
-          await userManager.CreateAsync(user, "yavar10Yr");
+          await userManager.CreateAsync(user, "Pa$$w0rd");
         }
       }
 
