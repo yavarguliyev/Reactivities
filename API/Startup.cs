@@ -1,3 +1,4 @@
+using System.Text;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -15,6 +16,12 @@ using FluentValidation.AspNetCore;
 using API.Middleware;
 using Domain.Models;
 using Microsoft.AspNetCore.Identity;
+using Infrastructure.Security;
+using Application.Interfaces;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Authorization;
 
 namespace API
 {
@@ -34,7 +41,11 @@ namespace API
 
       #region 
       // controllers without view
-      services.AddMvc()
+      services.AddControllers(opt =>
+      {
+        var policy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
+        opt.Filters.Add(new AuthorizeFilter(policy));
+      })
           .AddFluentValidation(cfg => cfg.RegisterValidatorsFromAssemblyContaining<Create>())
           .AddJsonOptions(options =>
           {
@@ -81,7 +92,7 @@ namespace API
               options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
               {
                 Description = "JWT Authorization header using the Bearer scheme (Example: 'Bearer 12345abcdef')",
-                Name = "Authorization",
+                Name = "Authorization: Bearer",
                 In = ParameterLocation.Header,
                 Type = SecuritySchemeType.ApiKey,
                 Scheme = "Bearer"
@@ -114,6 +125,22 @@ namespace API
       var identityBuilder = new IdentityBuilder(builder.UserType, builder.Services);
       identityBuilder.AddEntityFrameworkStores<DataDbContext>();
       identityBuilder.AddSignInManager<SignInManager<AppUser>>();
+
+      var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["TokenKey"]));
+      services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+              .AddJwtBearer(opt =>
+              {
+                opt.TokenValidationParameters = new TokenValidationParameters
+                {
+                  ValidateIssuerSigningKey = true,
+                  IssuerSigningKey = key,
+                  ValidateAudience = false,
+                  ValidateIssuer = false
+                };
+              });
+
+      services.AddScoped<IJwtGenerator, JwtGenerator>();
+      services.AddScoped<IUserAccessor, UserAccessor>();
       #endregion
     }
 
@@ -132,8 +159,10 @@ namespace API
       }
 
       // app.UseHttpsRedirection();
-      app.UseRouting();
+
       app.UseAuthentication();
+      app.UseRouting();
+      app.UseAuthorization();
       app.UseCors(ApiCors);
 
       app.UseEndpoints(endpoints =>
