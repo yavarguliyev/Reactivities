@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Button, Item, Segment, Icon } from 'semantic-ui-react';
 import { IActivity } from '../../../app/models/activity';
 import { format } from 'date-fns';
+import ActivtyListItemAttendees from './ActivtyListItemAttendees';
 
 const ActivityListItem: React.FC<{ activity: IActivity }> = ({ activity }) => {
   return (
@@ -23,7 +24,7 @@ const ActivityListItem: React.FC<{ activity: IActivity }> = ({ activity }) => {
         <Icon name="marker" /> {activity.venue}, {activity.city}
       </Segment>
       <Segment secondary>
-        Attendees will go there
+        <ActivtyListItemAttendees attendees={activity.attendees}/>
       </Segment>
       <Segment clearing>
         <span>{activity.description}</span>

@@ -22,7 +22,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
-using System.Collections.Generic;
+using AutoMapper;
 
 namespace API
 {
@@ -82,6 +82,9 @@ namespace API
       // MediatR
       services.AddMediatR(typeof(List.Handler).Assembly);
 
+      // Auto Mapper
+      services.AddAutoMapper(typeof(List.Handler));
+
       // swagger documentation for api
       services.AddSwaggerGen(options =>
             {
@@ -119,6 +122,7 @@ namespace API
 
       services.AddDbContext<DataDbContext>(opt =>
       {
+        opt.UseLazyLoadingProxies();
         opt.UseSqlite(Configuration.GetConnectionString("DefaultConnection"), m => m.MigrationsAssembly("Persistence"));
       });
 
@@ -126,6 +130,15 @@ namespace API
       var identityBuilder = new IdentityBuilder(builder.UserType, builder.Services);
       identityBuilder.AddEntityFrameworkStores<DataDbContext>();
       identityBuilder.AddSignInManager<SignInManager<AppUser>>();
+
+      services.AddAuthorization(opt =>
+      {
+        opt.AddPolicy("IsActivityHost", policy =>
+        {
+          policy.Requirements.Add(new IsHostRequirement());
+        });
+      });
+      services.AddTransient<IAuthorizationHandler, IsHostRequirementHandler>();
 
       var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["TokenKey"]));
       services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
