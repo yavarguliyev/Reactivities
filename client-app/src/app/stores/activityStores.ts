@@ -1,39 +1,47 @@
+import { RootStore } from './rootStore';
 import { IActivity } from './../models/activity';
-import { observable, action, makeObservable, computed, configure, runInAction } from "mobx";
-import { createContext, SyntheticEvent } from "react";
+import { observable, action, makeObservable, computed, runInAction } from "mobx";
+import { SyntheticEvent } from "react";
 import agent from '../api/agent';
 import { history } from '../..';
 import { toast } from 'react-toastify';
 
-configure({
-  enforceActions: "always"
-});
+export default class ActivityStore {
+  rootStore: RootStore;
 
-class ActivityStore {
+  constructor(rootStore: RootStore) {
+    this.rootStore = rootStore;
+    makeObservable(this);
+  }
+
   @observable activityRegistry = new Map();
   @observable activity: IActivity | null = null;
   @observable loadingInitial = false;
   @observable submitting = false;
   @observable target = '';
 
-  constructor() {
-    makeObservable(this)
-  }
-
   @computed get activitiesByDate() {
-    return this.getActivitiesByDate(Array.from(this.activityRegistry.values()));
+    return this.groupActivitiesByDate(
+      Array.from(this.activityRegistry.values())
+    );
   }
 
-  getActivitiesByDate(activities: IActivity[]) {
-    const sortActivities = activities.slice().sort(
-      (a, b) => a.date!.getTime() - b.date!.getTime()
+  groupActivitiesByDate(activities: IActivity[]) {
+    const sortedActivities = activities.sort(
+      (a, b) => a.date.getTime() - b.date.getTime()
     );
-
-    return Object.entries(sortActivities.reduce((activities, activity) => {
-      const date = activity.date.toISOString().split('T')[0];
-      activities[date] = activities[date] ? [...activities[date], activity] : [activity];
-      return activities;
-    }, {} as { [key: string]: IActivity[] }));
+    return Object.entries(
+      sortedActivities.reduce(
+        (activities, activity) => {
+          const date = activity.date.toISOString().split('T')[0];
+          activities[date] = activities[date]
+            ? [...activities[date], activity]
+            : [activity];
+          return activities;
+        },
+        {} as { [key: string]: IActivity[] }
+      )
+    );
   }
 
   @action loadActivities = async () => {
@@ -145,5 +153,3 @@ class ActivityStore {
 
   }
 }
-
-export default createContext(new ActivityStore());
