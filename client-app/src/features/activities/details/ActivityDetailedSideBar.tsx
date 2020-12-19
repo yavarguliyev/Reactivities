@@ -9,6 +9,7 @@ interface IProps {
 }
 
 const ActivityDetailedSideBar: React.FC<IProps> = ({ attendess }) => {
+  
   return (
     <Fragment>
       <Segment textAlign='center' style={{ border: 'none' }} attached='top' secondary inverted color='teal'>

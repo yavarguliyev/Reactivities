@@ -15,7 +15,7 @@ namespace Application.Photos
   {
     public class CommandPhotoAdd : IRequest<Photo>
     {
-      public IFormFile file { get; set; }
+      public IFormFile File { get; set; }
     }
 
     public class Handler : IRequestHandler<CommandPhotoAdd, Photo>
@@ -33,7 +33,7 @@ namespace Application.Photos
 
       public async Task<Photo> Handle(CommandPhotoAdd request, CancellationToken cancellationToken)
       {
-        var photoUploadResult = _photoAccessor.AddPhoto(request.file);
+        var photoUploadResult = _photoAccessor.AddPhoto(request.File);
 
         var user = await _context.Users.SingleOrDefaultAsync(x => x.UserName == _userAccessor.GetCurrentUserName());
 

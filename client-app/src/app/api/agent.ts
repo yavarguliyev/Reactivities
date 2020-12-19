@@ -1,3 +1,4 @@
+import { IPhoto, IProfile } from './../models/profile';
 import { IUser, IUserFormValues } from './../models/user';
 import axios, { AxiosResponse } from "axios";
 import { toast } from "react-toastify";
@@ -8,14 +9,14 @@ axios.defaults.baseURL = "http://localhost:5000/api/v1";
 
 axios.interceptors.request.use((config) => {
   const token = window.localStorage.getItem('jwt');
-  if(token) config.headers.Authorization = `Bearer ${token}`;
+  if (token) config.headers.Authorization = `Bearer ${token}`;
   return config;
 }, error => {
   return Promise.reject(error);
 });
 
 axios.interceptors.response.use(undefined, error => {
-  if(error.message === 'Network Error' && !error.response) {
+  if (error.message === 'Network Error' && !error.response) {
     toast.error('Network error - make sure API is running!');
   }
   const { status, data, config } = error.response;
@@ -25,7 +26,7 @@ axios.interceptors.response.use(undefined, error => {
   if (status === 400 && config.method === 'get' && data.errors.hasOwnProperty('id')) {
     history.push('/notfound');
   }
-  if(status === 500) {
+  if (status === 500) {
     toast.error('Server error - check the terminal for more info!');
   }
   throw error.response;
@@ -41,6 +42,14 @@ const requests = {
   post: (url: string, body: {}) => axios.post(url, body).then(sleep(1000)).then(responseBody),
   put: (url: string, body: {}) => axios.put(url, body).then(sleep(1000)).then(responseBody),
   del: (url: string) => axios.delete(url).then(sleep(1000)).then(responseBody),
+  postForm: (url: string, file: Blob) => {
+    let formData = new FormData();
+    formData.append('File', file);
+
+    return axios.post(url, formData, {
+      headers: { 'Content-type': 'multipart/form-data' }
+    }).then(responseBody);
+  }
 }
 
 const Activities = {
@@ -55,13 +64,21 @@ const Activities = {
 
 const User = {
   current: (): Promise<IUser> => requests.get(`/user/current-user`),
-  login: (user: IUserFormValues): Promise<IUser>  => requests.post(`/user/login`, user),
-  register: (user: IUserFormValues): Promise<IUser>  => requests.post(`/user/register`, user)
+  login: (user: IUserFormValues): Promise<IUser> => requests.post(`/user/login`, user),
+  register: (user: IUserFormValues): Promise<IUser> => requests.post(`/user/register`, user)
+};
+
+const Profiles = {
+  get: (username: string): Promise<IProfile> => requests.get(`/profiles/details/${username}`),
+  uploadPhoto: (photo: Blob): Promise<IPhoto> => requests.postForm(`/photos/add`, photo),
+  setMainPhoto: (id: string) => requests.post(`photos/setmain/${id}/setmain`, {}),
+  deletePhoto: (id: string) => requests.del(`photos/delete/${id}`)
 };
 
 const agent = {
   Activities,
-  User
+  User,
+  Profiles
 };
 
 export default agent;
