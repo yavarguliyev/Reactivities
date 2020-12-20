@@ -10,22 +10,19 @@ namespace API.Controllers.v1
   {
     #region profiles
 
-    [Route("details/{username}")]
-    [HttpGet]
+    [HttpGet("details/{username}")]
     public async Task<ActionResult<Profile>> Details(string username)
     {
       return await Mediator.Send(new Details.Query { Username = username });
     }
 
-    [Route("edit")]
-    [HttpPut]
+    [HttpPut("edit")]
     public async Task<ActionResult<Unit>> Edit(EditProfile.CommandProfileEdit command)
     {
       return await Mediator.Send(command);
     }
 
-    [Route("getuseractivities/{username}/activities")]
-    [HttpGet]
+    [HttpGet("getuseractivities/{username}/activities")]
     public async Task<ActionResult<List<UserActivityDto>>> GetUserActivities(string username, string predicate)
     {
       return await Mediator.Send(new ListActivities.Query { Username = username, Predicate = predicate });

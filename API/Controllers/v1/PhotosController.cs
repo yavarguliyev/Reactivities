@@ -10,22 +10,19 @@ namespace API.Controllers.v1
   {
     #region photos
 
-    [Route("add")]
-    [HttpPost]
+    [HttpPost("add")]
     public async Task<ActionResult<Photo>> Add([FromForm] AddPhoto.CommandPhotoAdd command)
     {
       return await Mediator.Send(command);
     }
 
-    [Route("delete/{id}")]
-    [HttpDelete]
+    [HttpDelete("delete/{id}")]
     public async Task<ActionResult<Unit>> Delete(string id)
     {
       return await Mediator.Send(new DeletePhoto.CommandPhotoDelete { Id = id });
     }
 
-    [Route("setmain/{id}/setmain")]
-    [HttpPost]
+    [HttpPost("setmain/{id}/setmain")]
     public async Task<ActionResult<Unit>> SetMain(string id)
     {
       return await Mediator.Send(new SetMain.CommandSetMainPhoto { Id = id });

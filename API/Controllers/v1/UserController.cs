@@ -9,23 +9,20 @@ namespace API.Controllers.v1
   {
     #region user
     [AllowAnonymous]
-    [Route("login")]
-    [HttpPost]
+    [HttpPost("login")]
     public async Task<ActionResult<User>> Login(Login.Query query)
     {
       return await Mediator.Send(query);
     }
 
     [AllowAnonymous]
-    [Route("register")]
-    [HttpPost]
+    [HttpPost("register")]
     public async Task<ActionResult<User>> Register(Register.RegisterCommand command)
     {
       return await Mediator.Send(command);
     }
 
-    [Route("current-user")]
-    [HttpGet]
+    [HttpGet("current-user")]
     public async Task<ActionResult<User>> CurrentUser()
     {
       return await Mediator.Send(new CurrentUser.Query());

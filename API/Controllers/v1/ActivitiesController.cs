@@ -11,31 +11,26 @@ namespace API.Controllers.v1
   public class ActivitiesController : BaseApiController
   {
     #region activities
-    [Route("list")]
-    [HttpGet]
+    [HttpGet("list")]
     public async Task<ActionResult<List.ActivitiesEnvelope>> List(int? limit, int? offset, bool isGoing, bool isHost, DateTime? startDate)
     {
       return await Mediator.Send(new List.Query(limit, offset, isGoing, isHost, startDate));
     }
 
-    [Route("details/{id}")]
-    [HttpGet]
-    [Authorize]
+    [HttpGet("details/{id}")]
     public async Task<ActionResult<ActivityDto>> Details(Guid id)
     {
       return await Mediator.Send(new Details.Query { Id = id });
     }
 
-    [Route("create")]
-    [HttpPost]
+    [HttpPost("create")]
     public async Task<ActionResult<Unit>> Create(Create.Command command)
     {
       return await Mediator.Send(command);
     }
 
 
-    [Route("edit/{id}")]
-    [HttpPut]
+    [HttpPut("edit/{id}")]
     [Authorize(Policy = "IsActivityHost")]
     public async Task<ActionResult<Unit>> Edit(Guid id, Edit.CommandEdit command)
     {
@@ -43,23 +38,20 @@ namespace API.Controllers.v1
       return await Mediator.Send(command);
     }
 
-    [Route("delete/{id}")]
-    [HttpDelete]
+    [HttpDelete("delete/{id}")]
     [Authorize(Policy = "IsActivityHost")]
     public async Task<ActionResult<Unit>> DeleteActivity(Guid id)
     {
       return await Mediator.Send(new Delete.Command { Id = id });
     }
 
-    [Route("attend/{id}/attend")]
-    [HttpPost]
+    [HttpPost("attend/{id}/attend")]
     public async Task<ActionResult<Unit>> Attend(Guid id)
     {
       return await Mediator.Send(new Attend.CommandAttend { Id = id });
     }
 
-    [Route("unattend/{id}/unattend")]
-    [HttpDelete]
+    [HttpDelete("unattend/{id}/unattend")]
     public async Task<ActionResult<Unit>> UnAttend(Guid id)
     {
       return await Mediator.Send(new UnAttend.CommandDelete { Id = id });

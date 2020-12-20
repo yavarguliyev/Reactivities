@@ -7,8 +7,8 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Persistence.Migrations
 {
   [DbContext(typeof(DataDbContext))]
-  [Migration("20201220114343_followings_followers_table_added")]
-  partial class followings_followers_table_added
+  [Migration("20201220221703_initial")]
+  partial class initial
   {
     protected override void BuildTargetModel(ModelBuilder modelBuilder)
     {
@@ -163,6 +163,31 @@ namespace Persistence.Migrations
             b.ToTable("Photos");
           });
 
+      modelBuilder.Entity("Domain.Models.RefreshToken", b =>
+          {
+            b.Property<int>("Id")
+                      .ValueGeneratedOnAdd()
+                      .HasColumnType("INTEGER");
+
+            b.Property<string>("AppUserId")
+                      .HasColumnType("TEXT");
+
+            b.Property<DateTime>("Expires")
+                      .HasColumnType("TEXT");
+
+            b.Property<DateTime?>("Revoked")
+                      .HasColumnType("TEXT");
+
+            b.Property<string>("Token")
+                      .HasColumnType("TEXT");
+
+            b.HasKey("Id");
+
+            b.HasIndex("AppUserId");
+
+            b.ToTable("RefreshToken");
+          });
+
       modelBuilder.Entity("Domain.Models.UserActivity", b =>
           {
             b.Property<string>("AppUserId")
@@ -197,37 +222,6 @@ namespace Persistence.Migrations
             b.HasIndex("TargetId");
 
             b.ToTable("Followings");
-          });
-
-      modelBuilder.Entity("Domain.Models.Value", b =>
-          {
-            b.Property<int>("Id")
-                      .ValueGeneratedOnAdd()
-                      .HasColumnType("INTEGER");
-
-            b.Property<string>("Name")
-                      .HasColumnType("TEXT");
-
-            b.HasKey("Id");
-
-            b.ToTable("Values");
-
-            b.HasData(
-                      new
-                  {
-                    Id = 1,
-                    Name = "Value 101"
-                  },
-                      new
-                  {
-                    Id = 2,
-                    Name = "Value 102"
-                  },
-                      new
-                  {
-                    Id = 3,
-                    Name = "Value 103"
-                  });
           });
 
       modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -305,11 +299,9 @@ namespace Persistence.Migrations
       modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
           {
             b.Property<string>("LoginProvider")
-                      .HasMaxLength(128)
                       .HasColumnType("TEXT");
 
             b.Property<string>("ProviderKey")
-                      .HasMaxLength(128)
                       .HasColumnType("TEXT");
 
             b.Property<string>("ProviderDisplayName")
@@ -347,11 +339,9 @@ namespace Persistence.Migrations
                       .HasColumnType("TEXT");
 
             b.Property<string>("LoginProvider")
-                      .HasMaxLength(128)
                       .HasColumnType("TEXT");
 
             b.Property<string>("Name")
-                      .HasMaxLength(128)
                       .HasColumnType("TEXT");
 
             b.Property<string>("Value")
@@ -382,6 +372,15 @@ namespace Persistence.Migrations
             b.HasOne("Domain.Models.AppUser", null)
                       .WithMany("Photos")
                       .HasForeignKey("AppUserId");
+          });
+
+      modelBuilder.Entity("Domain.Models.RefreshToken", b =>
+          {
+            b.HasOne("Domain.Models.AppUser", "AppUser")
+                      .WithMany("RefreshTokens")
+                      .HasForeignKey("AppUserId");
+
+            b.Navigation("AppUser");
           });
 
       modelBuilder.Entity("Domain.Models.UserActivity", b =>
@@ -487,6 +486,8 @@ namespace Persistence.Migrations
             b.Navigation("Followings");
 
             b.Navigation("Photos");
+
+            b.Navigation("RefreshTokens");
 
             b.Navigation("UserActivities");
           });

@@ -156,7 +156,7 @@ namespace API
         opt.UseSqlite(Configuration.GetConnectionString("DefaultConnection"), m => m.MigrationsAssembly("Persistence"));
       });
 
-      var builder = services.AddDefaultIdentity<AppUser>();
+      var builder = services.AddIdentityCore<AppUser>();
       var identityBuilder = new IdentityBuilder(builder.UserType, builder.Services);
       identityBuilder.AddEntityFrameworkStores<DataDbContext>();
       identityBuilder.AddSignInManager<SignInManager<AppUser>>();
@@ -210,14 +210,10 @@ namespace API
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
       app.UseMiddleware<ErrorHandlingMiddleware>();
-
+      #region
       if (env.IsDevelopment())
       {
         // app.UseDeveloperExceptionPage();
-      }
-      else
-      {
-        // app.UseHsts();
       }
 
       // app.UseHttpsRedirection();
@@ -235,25 +231,16 @@ namespace API
       //              .ImageSources(s => s.Self().CustomSources("https://res.cloudinary.com", "blob:", "data:"))
       //              .ScriptSources(s => s.Self().CustomSources("sha256-5As4+3YpY62+l38PsxCEkjB1R4YtyktBtRScTJ3fyLU="))
       //          );
+      #endregion
 
       app.UseDefaultFiles();
       app.UseStaticFiles();
 
-      app.UseAuthentication();
       app.UseRouting();
-      app.UseAuthorization();
-
       app.UseCors(ApiCors);
 
-      app.UseEndpoints(endpoints =>
-      {
-        endpoints.MapControllers();
-        endpoints.MapHub<ChatHub>("/chat");
-
-        endpoints.MapControllerRoute(
-                    name: "spa-fallback",
-                    pattern: "api/v1/{controller=fallback}/{action=index}");
-      });
+      app.UseAuthentication();
+      app.UseAuthorization();
 
       app.UseSwagger();
       app.UseSwaggerUI(s =>
@@ -261,6 +248,14 @@ namespace API
         s.RoutePrefix = "";
         s.DocumentTitle = "Swagger Documentation";
         s.SwaggerEndpoint("/swagger/v1/swagger.json", "api/v1");
+      });
+
+      app.UseEndpoints(endpoints =>
+      {
+        endpoints.MapControllers();
+        endpoints.MapHub<ChatHub>("/chat");
+
+        endpoints.MapFallbackToController("index", "Fallback");
       });
     }
   }
