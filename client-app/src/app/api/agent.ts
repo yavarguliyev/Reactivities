@@ -74,6 +74,10 @@ const Profiles = {
   setMainPhoto: (id: string) => requests.post(`photos/setmain/${id}/setmain`, {}),
   deletePhoto: (id: string) => requests.del(`photos/delete/${id}`),
   updateProfile: (profile: Partial<IProfile>) => requests.put(`/profiles/edit`, profile),
+  follow: (username: string) => requests.post(`/profiles/follow/${username}/follow`, {}),
+  unfollow: (username: string) => requests.del(`/profiles/unfollow/${username}/follow`),
+  listFollowings: (username: string, predicate: string) => requests.get(`/profiles/getfollowings/${username}/follow?predicate=${predicate}`),
+  listActivities: (username: string, predicate: string) => requests.get(`/profiles/getfollowings/${username}/follow?predicate=${predicate}`)
 };
 
 const agent = {

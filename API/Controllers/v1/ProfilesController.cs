@@ -13,7 +13,7 @@ namespace API.Controllers.v1
     [HttpGet]
     public async Task<ActionResult<Profile>> Details(string username)
     {
-      return await Mediator.Send(new Details.Query { UserName = username });
+      return await Mediator.Send(new Details.Query { Username = username });
     }
 
     [Route("edit")]
