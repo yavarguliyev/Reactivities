@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using MediatR;
@@ -14,9 +13,9 @@ namespace API.Controllers.v1
     #region activities
     [Route("list")]
     [HttpGet]
-    public async Task<ActionResult<List<ActivityDto>>> List()
+    public async Task<ActionResult<List.ActivitiesEnvelope>> List(int? limit, int? offset, bool isGoing, bool isHost, DateTime? startDate)
     {
-      return await Mediator.Send(new List.Query());
+      return await Mediator.Send(new List.Query(limit, offset, isGoing, isHost, startDate));
     }
 
     [Route("details/{id}")]
@@ -33,6 +32,7 @@ namespace API.Controllers.v1
     {
       return await Mediator.Send(command);
     }
+
 
     [Route("edit/{id}")]
     [HttpPut]
