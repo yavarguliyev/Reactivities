@@ -255,7 +255,7 @@ namespace API
         endpoints.MapControllers();
         endpoints.MapHub<ChatHub>("/chat");
 
-        endpoints.MapFallbackToController("index", "Fallback");
+        endpoints.MapFallbackToController("index", "fallback");
       });
     }
   }
